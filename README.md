@@ -88,17 +88,17 @@ específico, es un método que se puede rearmar en cualquier proyecto.
 
 ## Instalación
 
-Este repo (`orbit`) es donde se **desarrolla** el mecanismo y donde vive
-**tu `BASELINE.md` real** (no solo la plantilla) — es la única unidad que
-tenés que llevar de una máquina a otra. No es algo que se clona o se
-forkea dentro de cada proyecto nuevo: los proyectos nunca dependen de
-tener este repo cerca, solo de lo que ya quedó copiado/symlinkeado en
-`~/.claude/` y de lo que quedó commiteado en su propio `playbook/`.
+Hay dos escenarios distintos según quién sos, y se resuelven distinto —
+mezclarlos es el error más probable acá.
 
-**Primera vez en una máquina (esta o cualquier otra):**
+### Si sos el dueño de este repo (`jose-valero/orbit`)
+
+Este repo es donde se **desarrolla** el mecanismo y donde vive **tu
+`BASELINE.md` real** (no solo la plantilla) — es la única unidad que
+tenés que llevar de una máquina a otra.
 
 ```bash
-git clone <tu-remoto-privado-de-orbit> ~/orbit   # o donde prefieras
+git clone https://github.com/jose-valero/orbit.git ~/orbit
 cd ~/orbit
 cp BASELINE.template.md BASELINE.md              # una sola vez en la vida
                                                   # de este repo; editalo y
@@ -110,45 +110,97 @@ ln -s ~/orbit/.claude/skills/orbit-writeback ~/.claude/skills/orbit-writeback
 ln -s ~/orbit/BASELINE.md                    ~/.claude/BASELINE.md
 ```
 
-**Verificá antes de dar por instalado:** abrí Claude Code parado en
-*cualquier otra* carpeta (no en `orbit`) y confirmá que `orbit-derive` y
+En una máquina nueva repetís exactamente este bloque después del
+`git clone` — no se pierde nada, porque `BASELINE.md` viaja versionado
+adentro de `orbit`.
+
+### Si NO sos el dueño — querés usar ORBIT en tu propia máquina, para siempre
+
+**No clones `jose-valero/orbit` y trates de commitear ahí — no vas a tener
+permiso de escritura, y además tu `BASELINE.md` es tuyo, no pertenece a mi
+repo.** Hacé **fork** primero:
+
+```bash
+# 1. Fork desde GitHub (botón Fork en jose-valero/orbit) → queda tu-usuario/orbit
+git clone git@github.com:<tu-usuario>/orbit.git ~/orbit
+cd ~/orbit
+cp BASELINE.template.md BASELINE.md
+# completalo con TUS convenciones — las mías no te sirven de nada
+git add BASELINE.md && git commit -m "my baseline" && git push
+
+mkdir -p ~/.claude/skills
+ln -s ~/orbit/.claude/skills/orbit-derive    ~/.claude/skills/orbit-derive
+ln -s ~/orbit/.claude/skills/orbit-writeback ~/.claude/skills/orbit-writeback
+ln -s ~/orbit/BASELINE.md                    ~/.claude/BASELINE.md
+```
+
+Para traer mejoras futuras del mecanismo sin perder tu `BASELINE.md`:
+
+```bash
+git remote add upstream https://github.com/jose-valero/orbit.git
+git fetch upstream && git merge upstream/main
+```
+
+Sin conflicto esperable — `BASELINE.md` es un archivo que solo vos tocás.
+
+### Si solo querés probarlo en UN proyecto, sin instalar nada global
+
+La ruta más liviana — no hace falta fork, ni un clon permanente, ni
+`BASELINE.md`:
+
+```bash
+git clone https://github.com/jose-valero/orbit.git /tmp/orbit-tmp
+cp -r /tmp/orbit-tmp/.claude/skills/orbit-derive    mi-proyecto/.claude/skills/
+cp -r /tmp/orbit-tmp/.claude/skills/orbit-writeback mi-proyecto/.claude/skills/
+rm -rf /tmp/orbit-tmp   # ya no hace falta — los templates viajan DENTRO
+                        # de cada carpeta de skill, no dependen de esto
+```
+
+Esto funciona porque cada skill trae sus propios templates empaquetados en
+su carpeta `templates/` — no necesitan que el resto del repo `orbit` siga
+presente en el filesystem. Si no tenés `BASELINE.md`, la skill sigue
+andando igual: bootstrapea solo con lo que ya exista en ese proyecto.
+Esta ruta vive **adentro del repo del proyecto** (`mi-proyecto/.claude/skills/`)
+— por eso además funciona desde sesiones Cowork/cloud (ver limitación
+abajo), y por eso conviene **copiar, no symlinkear**, si pensás compartir o
+clonar ese proyecto en otra máquina — un symlink a `/tmp` o a `~/orbit` no
+viaja con el repo del proyecto.
+
+### Verificación (cualquiera de las tres rutas)
+
+Abrí Claude Code — en cualquier carpeta si instalaste global, o en el
+proyecto puntual si instalaste solo ahí — y confirmá que `orbit-derive` y
 `orbit-writeback` aparecen en la lista de skills disponibles de esa sesión.
-Si no aparecen, el problema está en el symlink, no en el contenido — es más
-fácil de diagnosticar ahora que en medio de una tarea real.
+Si no aparecen, el problema está en la ruta/symlink, no en el contenido —
+más fácil de diagnosticar ahora que en medio de una tarea real.
 
-En una máquina nueva, repetís exactamente este bloque después del
-`git clone` — no se pierde nada de lo que ya tenías, porque `BASELINE.md`
-viaja versionado adentro de `orbit`, no solo en `~/.claude/` de una máquina
-puntual.
+### Limitación conocida — Cowork / sesiones cloud
 
-**Limitación conocida — Cowork / sesiones cloud.** Las skills instaladas a
-nivel personal (`~/.claude/skills/`) **no cargan en sesiones Cowork o
-cloud** — solo las de `.claude/skills/` dentro del propio repo del
-proyecto cargan ahí (verificado contra la documentación oficial de
-Skills). Si vas a trabajar un proyecto puntual también desde una sesión
-cloud, copiá (no symlinkees) las dos carpetas de skill directo a
-`<proyecto>/.claude/skills/` de ese repo, además del symlink global.
+Las skills instaladas a nivel personal (`~/.claude/skills/`) **no cargan
+en sesiones Cowork o cloud** — solo las de `.claude/skills/` dentro del
+propio repo del proyecto cargan ahí (verificado contra la documentación
+oficial de Skills). Si vas a trabajar un proyecto puntual también desde
+una sesión cloud, usá la ruta de instalación de "un solo proyecto" de
+arriba (copiada, no symlinkeada) para ese repo específico, además de tu
+instalación global si tenés una.
 
-**Por cada proyecto (nuevo o existente) — no hay paso de instalación:**
+### Uso por proyecto (nuevo o existente) — no hay paso de instalación acá
 
 1. Parate en el repo del proyecto (nuevo, vacío, o uno que ya existe con
    código).
 2. Invocá `orbit-derive` con la primera tarea real. Si no existe
    `playbook/PLAYBOOK.md` en ese repo, la skill lo crea ahí mismo — leyendo
-   tu `BASELINE.md` si el proyecto está vacío, o los docs/código que ya
-   existan si no lo está.
+   tu `BASELINE.md` si el proyecto está vacío y lo tenés, o los docs/código
+   que ya existan si no lo está.
 3. Revisá el contexto derivado antes de dejar que se implemente.
 4. Al cerrar la tarea, invocá `orbit-writeback`.
 5. `playbook/` queda commiteado **dentro del repo del proyecto** — no en
    `orbit`. Es correcto que viva ahí: evoluciona con ese código específico,
    no con vos.
 
-No hay instalador porque no hace falta uno para dos symlinks y un archivo
-de texto — un script de instalación es exactamente el tipo de
-infraestructura de más que este proyecto decidió no construir todavía. Si
-algún día esto se usa en más de una máquina con la frecuencia suficiente
-para que copiar 4 líneas de bash duela, ahí se justifica un instalador —
-no antes.
+No hay instalador porque no hace falta uno para un puñado de symlinks/copias
+y un archivo de texto — un script de instalación es exactamente el tipo de
+infraestructura de más que este proyecto decidió no construir todavía.
 
 ## Portabilidad — qué tan atado está esto a Claude Code
 

@@ -26,7 +26,9 @@ tomó y que no es obvia del código.
 - Si encaja en un archivo de convención existente (`playbook/conventions/
   <tema>.md`), agregalo ahí, en el molde Regla/Por qué/Trampa/Dónde
   verificar/Precedente.
-- Si es un tema nuevo, creá el archivo desde `CONVENTION.template.md`.
+- Si es un tema nuevo, creá el archivo desde `templates/CONVENTION.template.md`
+  — el que está empaquetado en la carpeta de esta misma skill
+  (`.claude/skills/orbit-writeback/templates/`), no en otro lado.
 - Si no encaja en ningún tema puntual (es del proyecto en general), va en
   la sección "Gotchas transversales" del `PLAYBOOK.md`.
 

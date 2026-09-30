@@ -18,7 +18,11 @@ Buscá `playbook/PLAYBOOK.md` en la raíz del proyecto actual.
   bootstrapealo antes de seguir:
   1. Buscá `~/.claude/BASELINE.md`. Si existe, leelo — es la semilla de
      día 0. Si no existe ahí, preguntale al usuario dónde vive antes de
-     asumir que no tiene uno.
+     asumir que no tiene uno. **Si confirma que no tiene ninguno** (primera
+     vez usando ORBIT, instalación liviana en un solo proyecto, etc.):
+     seguí igual, bootstrapeando solo con lo que exista en el proyecto
+     (pasos 2-3). No es un error ni un bloqueo — un `BASELINE.md` ayuda en
+     día 0 de un proyecto vacío, pero no es un requisito del mecanismo.
   2. Leé la documentación de arquitectura que ya exista en el proyecto
      (README, `AGENTS.md`/`CLAUDE.md`, docs de convenciones, ADRs) si la
      hay. **Si ya es buena y está al día:** `PLAYBOOK.md` la **referencia**
@@ -29,15 +33,18 @@ Buscá `playbook/PLAYBOOK.md` en la raíz del proyecto actual.
      anotala como hallazgo — gana el código, no la doc).
   3. Si hay código existente relevante al área de la tarea, leé 1-2
      archivos representativos — no todo el repo.
-  4. Copiá `PLAYBOOK.template.md` y `conventions/CONVENTION.template.md`
-     del propio ORBIT a `playbook/` del proyecto, y completá el índice con
-     lo que ya sabés de los pasos 1-3. Puede empezar casi vacío — eso es
-     correcto, no inventes convenciones que todavía no están confirmadas.
+  4. Copiá `templates/PLAYBOOK.template.md` y `templates/CONVENTION.template.md`
+     — **son los que están empaquetados en la carpeta de esta misma skill**
+     (`.claude/skills/orbit-derive/templates/`), no dependas de que exista
+     un clon del repo `orbit` en otro lado del filesystem — a `playbook/`
+     del proyecto, y completá el índice con lo que ya sabés de los pasos
+     1-3. Puede empezar casi vacío — eso es correcto, no inventes
+     convenciones que todavía no están confirmadas.
   5. Fijate si el `AGENTS.md`/`CLAUDE.md` del proyecto ya tiene un puntero
      a `playbook/`. Si no lo tiene, ofrecele al usuario agregarlo ahora
-     desde `AGENTS-STANZA.template.md` (del repo `orbit`) — no lo agregues
-     sin avisar, es un archivo que el usuario probablemente ya usa para
-     otras cosas.
+     desde `templates/AGENTS-STANZA.template.md` (misma carpeta de esta
+     skill) — no lo agregues sin avisar, es un archivo que el usuario
+     probablemente ya usa para otras cosas.
   6. Decile al usuario que acabás de bootstrapear el playbook y mostraselo
      antes de seguir.
 - **Si existe:** seguí al paso 1.
