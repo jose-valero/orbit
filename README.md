@@ -100,19 +100,15 @@ tenés que llevar de una máquina a otra.
 ```bash
 git clone https://github.com/jose-valero/orbit.git ~/orbit
 cd ~/orbit
-cp BASELINE.template.md BASELINE.md              # una sola vez en la vida
-                                                  # de este repo; editalo y
-                                                  # commitealo acá de ahí en más
-
-mkdir -p ~/.claude/skills
-ln -s ~/orbit/.claude/skills/orbit-derive    ~/.claude/skills/orbit-derive
-ln -s ~/orbit/.claude/skills/orbit-writeback ~/.claude/skills/orbit-writeback
-ln -s ~/orbit/BASELINE.md                    ~/.claude/BASELINE.md
+cp BASELINE.template.md BASELINE.md   # una sola vez en la vida de este
+                                       # repo; editalo y commitealo acá
+./install.sh
 ```
 
 En una máquina nueva repetís exactamente este bloque después del
 `git clone` — no se pierde nada, porque `BASELINE.md` viaja versionado
-adentro de `orbit`.
+adentro de `orbit`. `install.sh` es idempotente (correrlo de nuevo no
+rompe nada) y no pisa un symlink que apunte a otro lado sin avisar.
 
 ### Si NO sos el dueño — querés usar ORBIT en tu propia máquina, para siempre
 
@@ -128,10 +124,7 @@ cp BASELINE.template.md BASELINE.md
 # completalo con TUS convenciones — las mías no te sirven de nada
 git add BASELINE.md && git commit -m "my baseline" && git push
 
-mkdir -p ~/.claude/skills
-ln -s ~/orbit/.claude/skills/orbit-derive    ~/.claude/skills/orbit-derive
-ln -s ~/orbit/.claude/skills/orbit-writeback ~/.claude/skills/orbit-writeback
-ln -s ~/orbit/BASELINE.md                    ~/.claude/BASELINE.md
+./install.sh
 ```
 
 Para traer mejoras futuras del mecanismo sin perder tu `BASELINE.md`:
@@ -150,8 +143,7 @@ La ruta más liviana — no hace falta fork, ni un clon permanente, ni
 
 ```bash
 git clone https://github.com/jose-valero/orbit.git /tmp/orbit-tmp
-cp -r /tmp/orbit-tmp/.claude/skills/orbit-derive    mi-proyecto/.claude/skills/
-cp -r /tmp/orbit-tmp/.claude/skills/orbit-writeback mi-proyecto/.claude/skills/
+/tmp/orbit-tmp/install.sh --project ~/code/mi-proyecto
 rm -rf /tmp/orbit-tmp   # ya no hace falta — los templates viajan DENTRO
                         # de cada carpeta de skill, no dependen de esto
 ```
@@ -198,9 +190,13 @@ instalación global si tenés una.
    `orbit`. Es correcto que viva ahí: evoluciona con ese código específico,
    no con vos.
 
-No hay instalador porque no hace falta uno para un puñado de symlinks/copias
-y un archivo de texto — un script de instalación es exactamente el tipo de
-infraestructura de más que este proyecto decidió no construir todavía.
+`install.sh` es deliberadamente un script de bash en el propio repo, no un
+paquete publicado (npm u otro). Lo que ORBIT distribuye son archivos de
+texto — exigir un gestor de paquetes y un runtime aparte para copiarlos
+sería una dependencia más pesada que el contenido, y significaría mantener
+publicación/versionado/registro para algo que hoy usa una sola persona.
+Si esto se usa alguna vez con la frecuencia suficiente para que un script
+de bash no alcance, ahí se evalúa empaquetarlo — no antes.
 
 ## Portabilidad — qué tan atado está esto a Claude Code
 
