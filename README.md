@@ -1,14 +1,35 @@
 # ORBIT
 
-ORBIT es un mecanismo personal para trabajar con IA en proyectos de
-frontend: un playbook chico y mantenido por proyecto, contexto derivado por
-tarea, y verificación contra la fuente real antes de escribir código.
+ORBIT es un mecanismo personal para trabajar con IA en proyectos propios:
+un playbook chico y mantenido por proyecto, contexto derivado por tarea, y
+verificación contra la fuente real antes de escribir código.
 
 No es un framework, no es un starter, no es una metodología general de
 colaboración humano-IA. Esa fue la ambición original (ver `OEP/OEP-0000.md`)
 y quedó descartada — no producía nada verificable. Lo que sobrevivió fue un
 mecanismo mucho más chico y sí probado con evidencia real: **OEP-0001** y
-**OEP-0002**.
+**OEP-0002**. Lo que sigue (`OEP-0003` en adelante) extiende ese mecanismo a
+varios proyectos personales en paralelo, con la misma disciplina: cada
+pieza nueva se propone, se corre contra evidencia real, y recién entonces
+se acepta o se descarta.
+
+## Hacia dónde apunta esto
+
+La idea de fondo: cada proyecto tuyo corre su propio **Satélite** —
+playbook, convenciones, decisiones, todo autocontenido dentro de ese repo
+— y todos los Satélites orbitan alrededor de un único **orbit-core**: lo
+genérico, sin lógica de negocio de ningún proyecto, que se usa para
+sembrar el próximo. Una convención se promueve a `orbit-core` recién
+cuando se confirmó útil en 2+ proyectos reales — nunca antes.
+
+**Esto es dirección, no un hecho ya construido.** Hoy este mismo repo
+cumple el rol de `orbit-core` (no hizo falta crear uno nuevo — ya era
+genérico), y el primer Satélite real corriendo bajo este diseño es
+AssetMind. Un generador (web o CLI) que arme Satélites nuevos automáticamente
+es parte de la visión, pero está **deliberadamente fuera de alcance**
+hasta que el mecanismo a mano demuestre que vale la pena automatizarlo —
+ver `OEP/OEP-0003.md` para el vocabulario y los límites exactos, y
+`OEP/OEP-0004.md` para el primer experimento corriendo sobre esa base.
 
 ## Qué es, concretamente
 
@@ -19,12 +40,13 @@ Dos capas:
   verificación. Vive versionado en **este repo** (no solo en tu máquina) y
   se symlinkea a `~/.claude/` — ver §Instalación. Sirve para sembrar un
   proyecto en día 0, cuando todavía no hay nada de qué destilar.
-- **`playbook/` por proyecto** — un índice corto (`PLAYBOOK.md`) más
-  archivos de convención chicos (`conventions/<tema>.md`, uno por tema, cada
-  uno con su regla, su porqué, la trampa que rompe en silencio y un
-  precedente real). Se bootstrapea del `BASELINE.md` + lo que ya exista del
-  proyecto (docs, código), y crece con el uso. Vive y se commitea **dentro
-  del repo de cada proyecto**, no acá.
+- **`playbook/` por proyecto** (el corazón de cada Satélite) — un índice
+  corto (`PLAYBOOK.md`) más archivos de convención chicos
+  (`conventions/<tema>.md`, uno por tema, cada uno con su regla, su
+  porqué, la trampa que rompe en silencio y un precedente real). Se
+  bootstrapea del `BASELINE.md` + lo que ya exista del proyecto (docs,
+  código), y crece con el uso. Vive y se commitea **dentro del repo de
+  cada proyecto**, no acá.
 
 Dos skills automatizan ese playbook, y un puntero corto en el `AGENTS.md` /
 `CLAUDE.md` de cada proyecto lo hace legible por cualquier agente, aunque no
@@ -61,13 +83,24 @@ de escribir código o de confiar en un ticket/doc**. Eso es lo que las dos
 skills automatizan — no es una colección de reglas de un proyecto
 específico, es un método que se puede rearmar en cualquier proyecto.
 
+`OEP/OEP-0003.md` y `OEP/OEP-0004.md` extienden esa misma disciplina a
+coordinar varios proyectos: qué vocabulario usar (sin copiar el de ningún
+sistema externo), qué es genérico vs. específico de un proyecto, y un
+primer piso mínimo (alcance por ticket) propuesto y en evaluación — no
+aceptado todavía, exactamente igual que se trataron OEP-0001/0002 antes de
+tener resultado.
+
 ## Qué NO es
 
-- No es un starter de React con archivos para Claude Code.
+- No es un starter con archivos para Claude Code.
 - No es una colección de skills o agentes genéricos.
-- No pretende trascender frontend, ni un stack, ni un modelo de IA — el
-  alcance actual es deliberadamente chico: uso personal, proyectos
-  frontend, Claude Code.
+- No importa el aparato de ningún sistema externo (ciclos de desarrollo
+  con nombre propio, boards, branching strategy) solo porque ese sistema
+  lo tenga — cada pieza nueva necesita su propia evidencia, sobre el uso
+  real de este operador, antes de sumarse.
+- El alcance actual es deliberadamente chico: uso personal, Claude Code.
+  Ya no está limitado a frontend (AssetMind incluye backend), pero sigue
+  siendo de un solo operador, sin equipo.
 - No está pensado (todavía) para venderse ni para otro equipo. Si eso
   cambia algún día, tiene que ganárselo con evidencia — no es el objetivo
   de partida.
@@ -82,6 +115,12 @@ específico, es un método que se puede rearmar en cualquier proyecto.
 - `OEP/OEP-0002.md` — segundo experimento: generalización del mecanismo a
   tareas heterogéneas y a trabajo sin precedente. Incluye el caso donde sí
   se usa el nombre real (AssetMind), porque es un proyecto propio.
+- `OEP/OEP-0003.md` — vocabulario y límites de alcance para coordinar
+  varios proyectos (Satélite, orbit-core). Propuesta, no aceptada — recién
+  se acepta cuando un Satélite nuevo se arme así y deje evidencia.
+- `OEP/OEP-0004.md` — primer probe corriendo sobre esa base: un piso
+  mínimo de disciplina de commit por ticket, disparado por fricción real
+  observada en AssetMind, con criterio de corte explícito.
 - `playbook/`, `BASELINE.template.md`, `.claude/skills/` — lo que se
   construyó a partir de esa evidencia. Esto es lo que se usa de acá en
   adelante.
@@ -177,6 +216,9 @@ arriba (copiada, no symlinkeada) para ese repo específico, además de tu
 instalación global si tenés una.
 
 ### Uso por proyecto (nuevo o existente) — no hay paso de instalación acá
+
+Esto es arrancar un Satélite nuevo, sea un proyecto de cero o uno que ya
+existe con código (los dos caminos de `OEP-0004` §7):
 
 1. Parate en el repo del proyecto (nuevo, vacío, o uno que ya existe con
    código).
